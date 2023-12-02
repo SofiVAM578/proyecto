@@ -8,8 +8,8 @@
 using namespace std;
 
 const int MAX_MOVIES = 6000;
-
-struct Movie
+const int MAX_CLIE=2000;
+struct Movie     //Corresponde a la estuctura de datos de Peliculas
 {
     int id;
     string title;
@@ -22,12 +22,19 @@ struct Movie
     string status;
 };
 
-struct Customer
+struct Customer  //Corresponde a la estuctura de datos de Customer
 {
     string name;
     string rentedMovie;
 };
 
+struct Cliente     //Corresponde a la estuctura de datos de Peliculas
+{
+    int id;
+    string nombre;
+    string cedula;
+    string telefono;
+};
 /*string getCurrentDate()
 {
     time_t t = time(nullptr);
@@ -46,7 +53,7 @@ void printMovie(const Movie &movie)
     cout << "\nID: " << movie.id << endl;
     cout << "Titulo: " << movie.title << endl;
     cout << "Genero: " << movie.genres << endl;
-    cout << "Duracion: " << movie.duration << " minutes" << endl;
+    cout << "Duracion: " << movie.duration << " minutos" << endl;
     cout << "Director: " << movie.director << endl;
     cout << "Fecha de lanzamiento: " << movie.releaseDate << endl;
     cout << "Rentado por: " << movie.rentTo << endl;
@@ -180,7 +187,7 @@ void displayMovies(const Movie movies[], int size)
             }
             break;
         case 4:
-            cout << "Ingrese la fecha de lanzamiento de la pelicula (dd/mm/yyyy): ";
+            cout << "Ingrese la fecha de lanzamiento de la pelicula (yyyy-mm-dd): ";
             cin >> releaseDateFilter;
 
             foundReleaseDate = false;
@@ -377,23 +384,27 @@ int main()
    
     Movie movies[MAX_MOVIES];
     int movieSize = 0;
-
+    
+    
+    Cliente array[MAX_CLIE];
+    int indice=0;
+    
     loadMovies(movies, movieSize);
 
     while (true)
     {
       
-        cout << "\nTuPelicula System\n"
-             << endl;
-        cout << "1. Mostrar peliculas" << endl;
-        cout << "2. Consultar estado de alquiler" << endl;
-        cout << "3. Rentar pelicula" << endl;
-        cout << "4. Anadir nueva pelicula" << endl;
-        cout << "5. Buscar cliente" << endl;
-        cout << "6. Borrar Cliente"<<endl;
-        cout << "7. Peliculas Disponibles"<<endl;
-        cout << "8. Borrar Peliculas"<<endl;
-        cout << "9. Salir" << endl;
+        cout << "\nTuPelicula System\n"<< endl;
+        cout << "1. Mostrar Peliculas" << endl;
+        cout << "2. Consultar Estado de Alquiler" << endl;
+        cout << "3. Rentar Pelicula" << endl;
+        cout << "4. Anadir Nueva Pelicula" << endl;
+        cout << "5. Crear Cliente"<< endl;
+        cout << "6. Buscar Cliente" << endl;
+        cout << "7. Borrar Cliente"<<endl;
+        cout << "8. Peliculas Disponibles"<<endl;
+        cout << "9. Borrar Peliculas"<<endl;
+        cout << "10. Salir" << endl;
 
         int choice;
         cout << "Ingrese su eleccion: ";
@@ -442,7 +453,7 @@ int main()
             }
         }
         break;
-        case 3:
+        case 3: 
             {
                 int movieID;
                 cout << "Ingrese ID de pelicula: ";
@@ -462,11 +473,13 @@ int main()
                 {
                     if (movies[movieIndex].status == "Available" || movies[movieIndex].status == "")
                     {
+                        //Aca se debe ingresar el nombre del cliente a que se le renta la pelicula.
                         cout << "Ingrese nombre del cliente: ";
                         string customerName;
                         cin.ignore();
                         getline(cin, customerName);
 
+                       
                         movies[movieIndex].rentTo = customerName;
                         //movies[movieIndex].rentDate = getCurrentDate();
                         movies[movieIndex].status = "Rentado";
@@ -517,15 +530,34 @@ int main()
             }
             break;
         case 5:
-            {
-                string customerName;
+           /*{
+               string customerName;
                 cout << "\nIngresa el nombre: ";
                 cin.ignore();
                 getline(cin, customerName);
                 searchCustomer(customerName);
+            }*/
+            {
+                cout << "Nombre de Cliente: ";
+                cin.ignore();
+                getline(cin, array[indice].nombre);
+
+                cout << "Cedula de Cliente: ";
+                getline(cin, array[indice].cedula);
+
+                cout << "Telefono de Cliente";
+                cin >> array[indice].telefono;
+
+
+                array[indice].id = indice + 1;
+
+                ++indice;
             }
             break;
         case 6:
+            
+        break;
+        case 9:
             saveMovies(movies, movieSize);
             cout << "Saliendo de TuPelicula System. Adios!" << endl;
             return 0;

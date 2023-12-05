@@ -22,19 +22,15 @@ struct Movie     //Corresponde a la estuctura de datos de Peliculas
     string status;
 };
 
-struct Customer  //Corresponde a la estuctura de datos de Customer
-{
-    string name;
-    string rentedMovie;
-};
-
-struct Cliente     //Corresponde a la estuctura de datos de Peliculas
+struct Customer  //Corresponde a la estuctura de datos de Clientes
 {
     int id;
-    string nombre;
-    string cedula;
+    string name;
+    string rentedMovie;
     string telefono;
+    string cedula;
 };
+
 /*string getCurrentDate()
 {
     time_t t = time(nullptr);
@@ -81,13 +77,14 @@ void displayMovies(const Movie movies[], int size)
     string directorFilter;
     string releaseDateFilter;
     int idFilter;
+    string statusFilter;
 
     bool foundGenre = false;
     bool foundDuration = false;
     bool foundDirector = false;
     bool foundReleaseDate = false;
     bool foundID = false;
-
+    bool foundStatus=false;
     switch (displayChoice)
     {
     case 1:
@@ -112,7 +109,8 @@ void displayMovies(const Movie movies[], int size)
         cout << "3. Filtro por director" << endl;
         cout << "4. Filtro por fecha de lanzamiento" << endl;
         cout << "5. Filtro por ID" << endl;
-
+        cout << "6. Peliculas Rentadas" << endl;
+        cout << "7. Peliculas Disponibles" << endl;
         int filterChoice;
         cout << "Ingrese su opcion de filtro: ";
         cin >> filterChoice;
@@ -224,6 +222,42 @@ void displayMovies(const Movie movies[], int size)
                 cout << "No se encontraron peliculas con ese ID." << endl;
             }
             break;
+            case 6:
+            statusFilter="Rentado";
+
+            foundStatus = false;
+            for (int i = 0; i < size; ++i)
+            {
+                if (movies[i].status == statusFilter)
+                {
+                    printMovie(movies[i]);
+                    foundStatus = true;
+                }
+            }
+
+            if (!foundStatus)
+            {
+                cout << "No se encontraron peliculas Rentadas." << endl;
+            }
+            break;
+            case 7:
+            statusFilter="Rentado";
+
+            foundStatus = false;
+            for (int i = 0; i < size; ++i)
+            {
+                if (movies[i].status != statusFilter)
+                {
+                    printMovie(movies[i]);
+                    foundStatus = true;
+                }
+            }
+
+            if (!foundStatus)
+            {
+                cout << "No se encontraron peliculas Disponibles." << endl;
+            }
+            break;
         default:
             cout << "Filtro invalido." << endl;
         }
@@ -320,14 +354,28 @@ void saveMovies(const Movie movies[], int size)
 }
 
 
-void saveCustomer(const Customer &customer)
+void printCustomer(const Customer &customer)
 {
+   
+    cout << "\n=========================================" << endl;
+    cout << "ID: " << customer.id << endl;
+    cout << "Nombre: " << customer.name << endl;
+    cout << "Cedula: " << customer.cedula << endl;
+    cout << "Telefono: " << customer.telefono << endl;
+    cout << "Pelicula Rentada: " << customer.rentedMovie << endl;
+    cout << "=========================================" << endl;
+}
+
+void saveCustomer(Customer customer)
+{
+    int num_clientes=0;
     ofstream customersFile("customers.dat", ios::binary | ios::app);
     if (customersFile.is_open())
     {
-        customersFile.write(reinterpret_cast<const char *>(&customer), sizeof(Customer));
+        customersFile.write(reinterpret_cast<const char *>(&customer), sizeof(customer));
         customersFile.close();
         cout << "La informacion del cliente se guardo correctamente." << endl;
+        
     }
     else
     {
@@ -379,16 +427,101 @@ void searchCustomer(const string &customerName)
 }
 
 
+
+void buscarClientes(const Customer customer[], int customerSize)
+{
+    cout << "\nMostrar Clientes:\n"
+         << endl;
+    cout << "1. Mostrar todos los Clientes: " << endl;
+    cout << "2. Filtrar Cliente" << endl;
+
+    int displayChoice;
+    cout << "Ingrese su opcion de visualizacion: ";
+    cin >> displayChoice;
+
+    // Variables de filtro
+    string nameFilter;
+    string cedula;
+    string telefono;
+    
+
+    bool foundName = false;
+    bool foundCedula = false;
+    bool foundTelefono = false;
+    
+
+    switch (displayChoice)
+    {
+         case 1:
+            cout << "Todos los clientes:" << endl;
+            if (customerSize == 0)
+            {
+                cout << "No se encontraron clientes." << endl;
+            }
+            else
+            {
+                for (int i = 0; i < customerSize; ++i)
+                {
+                    printCustomer(customer[i]);
+                }
+            }
+        break;
+        case 2:
+            cout << "Filtro de Cliente: " << endl;
+            cout << "1. Filtro por nombre" << endl;
+            cout << "2. Filtro por cedula" << endl;
+            cout << "3. Filtro por telefono" << endl;
+            int filterChoice;
+            cout << "Ingrese su opcion de filtro: ";
+            cin >> filterChoice;
+            switch (filterChoice)
+            {
+                case 1:
+                    cout << "Ingrese el nombre: ";
+                    cin.ignore();
+                    getline(cin, nameFilter);
+                    transform(nameFilter.begin(), nameFilter.end(), nameFilter.begin(), ::tolower);
+
+                    foundName = false;
+                    for (int i = 0; i <customerSize ; ++i)
+                    {
+                        string lowerNames = customer[i].name;
+                        transform(lowerNames.begin(), lowerNames.end(), lowerNames.begin(), ::tolower);
+
+                        if (lowerNames.find(nameFilter) != string::npos)
+                        {
+                            printCustomer(customer[i]);
+                            foundName = true;
+                        }
+                    }
+
+                    if (!foundName)
+                    {
+                        cout << "No se encontraron Clientes con ese nombre." << endl;
+                    }
+                break;
+                default:
+                    cout << "Filtro invalido." << endl;
+            }
+        break;
+        default:
+            cout << "Eleccion de visualizacion no valida." << endl;
+    }
+}
+
+
+/********************FUNCIONES QUE CORRESPONDEN A LA ESTRUCTURA CLIENTE******/
+
+
 int main()
 {
    
     Movie movies[MAX_MOVIES];
     int movieSize = 0;
     
-    
-    Cliente array[MAX_CLIE];
-    int indice=0;
-    
+    Customer customer[MAX_CLIE];
+    int customerSize=0;
+     
     loadMovies(movies, movieSize);
 
     while (true)
@@ -398,13 +531,11 @@ int main()
         cout << "1. Mostrar Peliculas" << endl;
         cout << "2. Consultar Estado de Alquiler" << endl;
         cout << "3. Rentar Pelicula" << endl;
-        cout << "4. Anadir Nueva Pelicula" << endl;
-        cout << "5. Crear Cliente"<< endl;
-        cout << "6. Buscar Cliente" << endl;
-        cout << "7. Borrar Cliente"<<endl;
-        cout << "8. Peliculas Disponibles"<<endl;
-        cout << "9. Borrar Peliculas"<<endl;
-        cout << "10. Salir" << endl;
+        cout << "4. Agregar Nueva Pelicula" << endl;
+        cout << "5. Buscar Cliente" << endl;
+        cout << "6. Borrar Cliente"<<endl;
+        cout << "7. Borrar Peliculas"<<endl;
+        cout << "8. Salir" << endl;
 
         int choice;
         cout << "Ingrese su eleccion: ";
@@ -435,7 +566,8 @@ int main()
                     if (movies[i].status == "Rentado")
                     {
                         cout << "Rentado a: " << movies[i].rentTo << endl;
-                        //cout << "Rentado en: " << movies[i].rentDate << endl;
+                         
+                         //cout << "Rentado en: " << movies[i].rentDate << endl;
                         foundRentedMovies = true;
                     }
                     movieFound = true;
@@ -474,22 +606,39 @@ int main()
                     if (movies[movieIndex].status == "Available" || movies[movieIndex].status == "")
                     {
                         //Aca se debe ingresar el nombre del cliente a que se le renta la pelicula.
+                        int cont=1;
                         cout << "Ingrese nombre del cliente: ";
                         string customerName;
                         cin.ignore();
                         getline(cin, customerName);
-
-                       
+                        
+                        /*cout << "Ingrese cedula del cliente: ";
+                        cin.ignore();
+                        getline(cin, customer[customerSize].cedula);
+        
+                        cout << "Ingrese telefono del cliente: ";
+                        cin.ignore();
+                        getline(cin, customer[customerSize].telefono);*/
+                        
+                        cout << "Ingrese fecha de renta dd-mm-yyyy: ";
+                        string fecha;
+                        cin.ignore();
+                        getline(cin, fecha);
+                        
+                       /*  customer[customerSize].id = customerSize + 1;
+                         customer[customerSize].name = "";
+                         customer[customerSize].cedula = "";
+                         customer[customerSize].telefono = "";
+                         customer[customerSize].rentedMovie=movies[movieIndex].title;
+                         ++customerSize;
+                        saveCustomer(customer[customerSize]);*/
                         movies[movieIndex].rentTo = customerName;
-                        //movies[movieIndex].rentDate = getCurrentDate();
+                        movies[movieIndex].rentDate = fecha;
                         movies[movieIndex].status = "Rentado";
 
-                        Customer customer;
-                        customer.name = customerName;
-                        customer.rentedMovie = movies[movieIndex].title;
-                        saveCustomer(customer);
-
+                      
                         cout << "Pelicua rentada exitosamente." << endl;
+                        cont++;
                     }
                     else
                     {
@@ -524,40 +673,22 @@ int main()
                 movies[movieSize].id = movieSize + 1;
                 movies[movieSize].rentTo = "";
                 movies[movieSize].rentDate = "";
-                movies[movieSize].status = "Available";
+                movies[movieSize].status = "Disponible";
 
                 ++movieSize;
             }
             break;
         case 5:
-           /*{
-               string customerName;
-                cout << "\nIngresa el nombre: ";
-                cin.ignore();
-                getline(cin, customerName);
-                searchCustomer(customerName);
-            }*/
-            {
-                cout << "Nombre de Cliente: ";
-                cin.ignore();
-                getline(cin, array[indice].nombre);
-
-                cout << "Cedula de Cliente: ";
-                getline(cin, array[indice].cedula);
-
-                cout << "Telefono de Cliente";
-                cin >> array[indice].telefono;
-
-
-                array[indice].id = indice + 1;
-
-                ++indice;
-            }
-            break;
-        case 6:
-            
+            cout<<"Listado de Clientes"<<endl;
+            buscarClientes(customer, customerSize);
         break;
-        case 9:
+        case 6:
+            cout<<"vamos a borrar cliente"<<endl;
+        break;
+        case 7:
+            cout<<"Borrar PElicula"<<endl;
+        break;
+        case 8:
             saveMovies(movies, movieSize);
             cout << "Saliendo de TuPelicula System. Adios!" << endl;
             return 0;

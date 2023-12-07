@@ -29,18 +29,9 @@ struct Customer  //Corresponde a la estuctura de datos de Clientes
     string rentedMovie;
     string telefono;
     string cedula;
+    string fecha_renta;
 };
 
-/*string getCurrentDate()
-{
-    time_t t = time(nullptr);
-    tm *now = localtime(&t);
-    stringstream dateStream;
-    dateStream << setw(2) << setfill('0') << now->tm_mday << "/"
-               << setw(2) << setfill('0') << now->tm_mon + 1 << "/"
-               << now->tm_year + 1900;
-    return dateStream.str();
-}*/
 
 void printMovie(const Movie &movie)
 {
@@ -353,7 +344,8 @@ void saveMovies(const Movie movies[], int size)
     file.close();
 }
 
-
+/********************FUNCIONES QUE CORRESPONDEN A LA ESTRUCTURA CLIENTE******/
+//Funcion que permite mostrar los datos de cliente
 void printCustomer(const Customer &customer)
 {
    
@@ -362,33 +354,34 @@ void printCustomer(const Customer &customer)
     cout << "Nombre: " << customer.name << endl;
     cout << "Cedula: " << customer.cedula << endl;
     cout << "Telefono: " << customer.telefono << endl;
+    cout << "Fecha de Renta: " << customer.fecha_renta << endl;
     cout << "Pelicula Rentada: " << customer.rentedMovie << endl;
     cout << "=========================================" << endl;
 }
 
-void saveCustomer(Customer customer)
+// Funcion que permite guardar el array de cliente en un archivo binario
+void saveCustomer(const Customer &customer)
 {
-    int num_clientes=0;
     ofstream customersFile("customers.dat", ios::binary | ios::app);
     if (customersFile.is_open())
     {
-        customersFile.write(reinterpret_cast<const char *>(&customer), sizeof(customer));
+        customersFile.write(reinterpret_cast<const char *>(&customer), sizeof(Customer));
         customersFile.close();
-        cout << "La informacion del cliente se guardo correctamente." << endl;
-        
+        cout << "\nCargo la informacion del cliente satisfactoriamente." << endl;
     }
     else
     {
-        cout << "No se pueden abrir costumer. data para escribir" << endl;
+        cout << "No se pudo cargar la informacion" << endl;
     }
 }
 
+// Funcion que realizar buscar dentro del archivo cliente, buscando nombre
 void searchCustomer(const string &customerName)
 {
     ifstream customersFile("customers.dat", ios::binary);
     if (!customersFile.is_open())
     {
-        cout << "No se pudo abrir customers.dat. creando un nuevo archivo." << endl;
+        cout << "Creando el archivo" << endl;
         ofstream newFile("customers.dat", ios::binary);
         newFile.close();
         return;
@@ -400,7 +393,7 @@ void searchCustomer(const string &customerName)
     {
 
         cout << "Nombre: " << customer.name << endl;
-        cout << "Pelicula rentada: " << customer.rentedMovie << endl;
+        cout << "Pelicula Rentada: " << customer.rentedMovie << endl;
 
         string lowercaseCustomerName = customer.name;
         transform(lowercaseCustomerName.begin(), lowercaseCustomerName.end(), lowercaseCustomerName.begin(), ::tolower);
@@ -410,24 +403,22 @@ void searchCustomer(const string &customerName)
 
         if (lowercaseCustomerName == lowercaseInputName)
         {
-            cout << "Cliente encontrado:\n"
+            cout << "\nCliente:\n"
                  << endl;
             cout << "Nombre: " << customer.name << endl;
-            cout << "Pelicula rentada: " << customer.rentedMovie << endl;
+            cout << "Pelicula Rentada: " << customer.rentedMovie << endl;
             found = true;
             break;
         }
     }
     if (!found)
     {
-        cout << "Cliente no encontrado." << endl;
+        cout << "No hay informacion de cliente para mostrar." << endl;
     }
 
     customersFile.close();
 }
-
-
-
+//Funcion que permite buscar por id, nombre, telefoo y cedula
 void buscarClientes(const Customer customer[], int customerSize)
 {
     cout << "\nMostrar Clientes:\n"
@@ -508,19 +499,47 @@ void buscarClientes(const Customer customer[], int customerSize)
             cout << "Eleccion de visualizacion no valida." << endl;
     }
 }
+//Funcion que permite borrar cliente
+void borrarClientes(const Customer customer[], int customerSize)
+{
+    bool foundName;
+    
+                    cout << "Ingrese el nombre: ";
+                    string nameFilter;
+                    cin.ignore();
+                    getline(cin, nameFilter);
+                    transform(nameFilter.begin(), nameFilter.end(), nameFilter.begin(), ::tolower);
 
+                    foundName = false;
+                    for (int i = 0; i <customerSize ; ++i)
+                    {
+                        string lowerNames = customer[i].name;
+                        transform(lowerNames.begin(), lowerNames.end(), lowerNames.begin(), ::tolower);
 
-/********************FUNCIONES QUE CORRESPONDEN A LA ESTRUCTURA CLIENTE******/
+                        if (lowerNames.find(nameFilter) != string::npos)
+                        {
+                            printCustomer(customer[i]);
+                            foundName = true;
+                        }
+                        
+                    }
+                    if (!foundName)
+                    {
+                        cout << "Cliente no encontrado." << endl;
+                    }
+               
+    
+}
 
 
 int main()
 {
-   
+   //Crear el array de registro de peliculas
     Movie movies[MAX_MOVIES];
     int movieSize = 0;
-    
+    // Crear el array de registro de cliente
     Customer customer[MAX_CLIE];
-    int customerSize=0;
+    int customerSize = 0;
      
     loadMovies(movies, movieSize);
 
@@ -534,8 +553,7 @@ int main()
         cout << "4. Agregar Nueva Pelicula" << endl;
         cout << "5. Buscar Cliente" << endl;
         cout << "6. Borrar Cliente"<<endl;
-        cout << "7. Borrar Peliculas"<<endl;
-        cout << "8. Salir" << endl;
+        cout << "7. Salir" << endl;
 
         int choice;
         cout << "Ingrese su eleccion: ";
@@ -587,6 +605,7 @@ int main()
         break;
         case 3: 
             {
+                int cont=0;
                 int movieID;
                 cout << "Ingrese ID de pelicula: ";
                 cin >> movieID;
@@ -605,40 +624,39 @@ int main()
                 {
                     if (movies[movieIndex].status == "Available" || movies[movieIndex].status == "")
                     {
-                        //Aca se debe ingresar el nombre del cliente a que se le renta la pelicula.
-                        int cont=1;
-                        cout << "Ingrese nombre del cliente: ";
+                       
+                        cout << "Ingrese Nombre: ";
                         string customerName;
                         cin.ignore();
                         getline(cin, customerName);
-                        
-                        /*cout << "Ingrese cedula del cliente: ";
+                        cout << "Ingrese Cedula: ";
+                        string cedula;
                         cin.ignore();
-                        getline(cin, customer[customerSize].cedula);
-        
-                        cout << "Ingrese telefono del cliente: ";
+                        getline(cin, cedula);
+                        cout << "Ingrese Telefono: ";
+                        string telefono;
                         cin.ignore();
-                        getline(cin, customer[customerSize].telefono);*/
-                        
-                        cout << "Ingrese fecha de renta dd-mm-yyyy: ";
+                        getline(cin, telefono);
+                        cout << "Ingrese Fecha Renta (dd-mm-yyyy): ";
                         string fecha;
                         cin.ignore();
                         getline(cin, fecha);
-                        
-                       /*  customer[customerSize].id = customerSize + 1;
-                         customer[customerSize].name = "";
-                         customer[customerSize].cedula = "";
-                         customer[customerSize].telefono = "";
-                         customer[customerSize].rentedMovie=movies[movieIndex].title;
-                         ++customerSize;
-                        saveCustomer(customer[customerSize]);*/
                         movies[movieIndex].rentTo = customerName;
                         movies[movieIndex].rentDate = fecha;
                         movies[movieIndex].status = "Rentado";
-
-                      
-                        cout << "Pelicua rentada exitosamente." << endl;
+                        
+                        Customer customer;
+                        customer.id=cont+1;
+                        customer.name = customerName;
+                        customer.cedula = cedula;
+                        customer.telefono = telefono;
+                        customer.fecha_renta=fecha;
+                        customer.rentedMovie = movies[movieIndex].title;
+                        saveCustomer(customer);
+                        printCustomer(customer);
+                        cout << "Pelicula rentada exitosamente." << endl;
                         cont++;
+                        
                     }
                     else
                     {
@@ -679,16 +697,15 @@ int main()
             }
             break;
         case 5:
-            cout<<"Listado de Clientes"<<endl;
-            buscarClientes(customer, customerSize);
+            cout<<"Buscar Clientes"<<endl;
+             buscarClientes(customer, customerSize);
+            
         break;
-        case 6:
-            cout<<"vamos a borrar cliente"<<endl;
+         case 6:
+            cout<<"Borrar Cliente"<<endl;
+            borrarClientes(customer,customerSize);
         break;
         case 7:
-            cout<<"Borrar PElicula"<<endl;
-        break;
-        case 8:
             saveMovies(movies, movieSize);
             cout << "Saliendo de TuPelicula System. Adios!" << endl;
             return 0;

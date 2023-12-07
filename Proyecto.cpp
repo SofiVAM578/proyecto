@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -27,18 +28,15 @@ struct Customer
     string name;
     string rentedMovie;
 };
+struct Cliente{
+  int id;
+  string nombre;
+  string cedula;
+  string telefono;    
+};
 
-string getCurrentDate()
-{
-    time_t t = time(nullptr);
-    tm *now = localtime(&t);
-    stringstream dateStream;
-    dateStream << setw(2) << setfill('0') << now->tm_mday << "/"
-               << setw(2) << setfill('0') << now->tm_mon + 1 << "/"
-               << now->tm_year + 1900;
-    return dateStream.str();
-}
 
+// Imprime Pelicula
 void printMovie(const Movie &movie)
 {
 
@@ -46,25 +44,26 @@ void printMovie(const Movie &movie)
     cout << "\nID: " << movie.id << endl;
     cout << "Titulo: " << movie.title << endl;
     cout << "Genero: " << movie.genres << endl;
-    cout << "Duracion: " << movie.duration << " minutes" << endl;
+    cout << "Duracion: " << movie.duration << " minutos" << endl;
     cout << "Director: " << movie.director << endl;
-    cout << "Fecha de lanzamiento: " << movie.releaseDate << endl;
-    cout << "Rentado por: " << movie.rentTo << endl;
-    cout << "Dia rentado:" << movie.rentDate << endl;
+    cout << "Fecha Lanzamiento: " << movie.releaseDate << endl;
+    cout << "Rentado a: " << movie.rentTo << endl;
+    cout << "Fecha Renta: " << movie.rentDate << endl;
     cout << "Status: " << movie.status << endl
          << endl;
     cout << "=========================================" << endl;
 }
 
+// Permite mostrar peliculas todas y por filtro de genero, id, fecha lanzamiento, director, nombre
 void displayMovies(const Movie movies[], int size)
 {
-    cout << "\nDisplay Movies:\n"
+    cout << "\nMostrar Pelicular:\n"
          << endl;
-    cout << "1. Mostrar todas las peliculas: " << endl;
-    cout << "2. Filtro de las peliculas" << endl;
+    cout << "1. Mostrar todas las peliculas" << endl;
+    cout << "2. Filtro de Pelicula" << endl;
 
     int displayChoice;
-    cout << "Ingrese su opcion de visualizacion: ";
+    cout << "\nIngresa una opcion: ";
     cin >> displayChoice;
 
     // Variables de filtro
@@ -84,10 +83,10 @@ void displayMovies(const Movie movies[], int size)
     switch (displayChoice)
     {
     case 1:
-        cout << "Todas las peliculas:" << endl;
+        cout << "\nTodas las Peliculas:" << endl;
         if (size == 0)
         {
-            cout << "No se encontraron peliculas." << endl;
+            cout << "\nNo hay Pelicuals." << endl;
         }
         else
         {
@@ -98,22 +97,22 @@ void displayMovies(const Movie movies[], int size)
         }
         break;
     case 2:
-        cout << "Filtro de la pelicula: "
+        cout << "\nFiltro de Pelicualas:\n"
              << endl;
-        cout << "1. Filtro por genero" << endl;
-        cout << "2. Filtro por duracion" << endl;
-        cout << "3. Filtro por director" << endl;
-        cout << "4. Filtro por fecha de lanzamiento" << endl;
-        cout << "5. Filtro por ID" << endl;
+        cout << "1. Buscar por Genero" << endl;
+        cout << "2. Buscar por Duracion" << endl;
+        cout << "3. Buscar por Director" << endl;
+        cout << "4. Buscar por fecha de lanzamiento" << endl;
+        cout << "5. Buscar por ID" << endl;
 
         int filterChoice;
-        cout << "Ingrese su opcion de filtro: ";
+        cout << "\nIngrese una opcion: ";
         cin >> filterChoice;
 
         switch (filterChoice)
         {
         case 1:
-            cout << "Ingrese el genero: ";
+            cout << "\nIngrese genero: ";
             cin.ignore();
             getline(cin, genreFilter);
             transform(genreFilter.begin(), genreFilter.end(), genreFilter.begin(), ::tolower);
@@ -133,11 +132,11 @@ void displayMovies(const Movie movies[], int size)
 
             if (!foundGenre)
             {
-                cout << "No se encontraron peliculas de ese genero." << endl;
+                cout << "\nNo hay peliculas por el genero ingresado." << endl;
             }
             break;
         case 2:
-            cout << "Ingrese duracion exacta (minutos): ";
+            cout << "\nIngresa duracion exacta en minutos: ";
             cin >> durationFilter;
 
             foundDuration = false;
@@ -152,11 +151,11 @@ void displayMovies(const Movie movies[], int size)
 
             if (!foundDuration)
             {
-                cout << "No se encontraron peliculas con esa duracion." << endl;
+                cout << "\nNo hay peliculas por el tiempo de duracion ingresado." << endl;
             }
             break;
         case 3:
-            cout << "Ingrese el director de la pelicula: ";
+            cout << "\nIngresa Director: ";
             cin.ignore();
             getline(cin, directorFilter);
             transform(directorFilter.begin(), directorFilter.end(), directorFilter.begin(), ::tolower);
@@ -176,11 +175,11 @@ void displayMovies(const Movie movies[], int size)
 
             if (!foundDirector)
             {
-                cout << "No se encontraron peliculas de ese director." << endl;
+                cout << "\nNo hay peliculas por director ingresado." << endl;
             }
             break;
         case 4:
-            cout << "Ingrese la fecha de lanzamiento de la pelicula (dd/mm/yyyy): ";
+            cout << "\nIngrese fecha de lanzamiento (dd-mm-yyyy): ";
             cin >> releaseDateFilter;
 
             foundReleaseDate = false;
@@ -195,11 +194,11 @@ void displayMovies(const Movie movies[], int size)
 
             if (!foundReleaseDate)
             {
-                cout << "No se encontraron peliculas con esa fecha de lanzamiento." << endl;
+                cout << "\nNo hay peliculas por la fecha de lanzamiento ingresada." << endl;
             }
             break;
         case 5:
-            cout << "Ingrese el ID de la pelicula: ";
+            cout << "\nIngrese Id de pelicula: ";
             cin >> idFilter;
 
             foundID = false;
@@ -214,24 +213,25 @@ void displayMovies(const Movie movies[], int size)
 
             if (!foundID)
             {
-                cout << "No se encontraron peliculas con ese ID." << endl;
+                cout << "\nNo hay peliculas por id ingresado." << endl;
             }
             break;
         default:
-            cout << "Filtro invalido." << endl;
+            cout << "Filtro de Busqueda invalido." << endl;
         }
         break;
     default:
-        cout << "Eleccion de visualizacion no valida." << endl;
+        cout << "Opcion invalida." << endl;
     }
 }
 
+// Funcion para cargar datos en el archivo de peliculas
 void loadMovies(Movie movies[], int &size)
 {
     ifstream file("movies.csv");
     if (!file.is_open())
     {
-        cout << "No se pudo abrir el archivo movies.csv. Creando una nueva carpeta" << endl;
+        cout << "\nWarning: Unable to open movies.csv. Creating a new file." << endl;
         ofstream newFile("movies.csv");
         newFile.close();
         return;
@@ -246,23 +246,24 @@ void loadMovies(Movie movies[], int &size)
 
         if (line.find("\"") != string::npos)
         {
-            
+            // Encontrar la posici贸n de las comillas de cierre
             size_t startQuotePos = line.find("\"");
             size_t endQuotePos = line.find("\"", startQuotePos + 1);
 
             if (endQuotePos != string::npos)
             {
-                
+                // Leer el t铆tulo entre las comillas
                 movies[size].title = line.substr(startQuotePos + 1, endQuotePos - startQuotePos - 1);
 
-                
+                // Utilizar una variable separada para leer el resto de los campos despu茅s de las comillas
                 string restOfLine;
                 getline(iss >> std::ws, restOfLine);
 
-                
+                // Utilizar otra istringstream para procesar el resto de la l铆nea
                 istringstream restIss(restOfLine);
 
-                
+                // Leer los campos restantes
+                restIss >> comma; // Consumir la coma despu茅s de las comillas
                 getline(restIss >> std::ws, movies[size].genres, ',');
                 restIss >> movies[size].duration >> comma;
                 getline(restIss >> std::ws, movies[size].director, ',');
@@ -274,9 +275,9 @@ void loadMovies(Movie movies[], int &size)
         }
         else
         {
-            
+            // Si no hay comillas, leer el t铆tulo hasta la coma
             getline(iss, movies[size].title, ',');
-            
+            // Resto de los campos
             getline(iss >> std::ws, movies[size].genres, ',');
             iss >> movies[size].duration >> comma;
             getline(iss >> std::ws, movies[size].director, ',');
@@ -292,13 +293,13 @@ void loadMovies(Movie movies[], int &size)
     file.close();
 }
 
-
+// Funcion para guardar datos en el archivo pelicula
 void saveMovies(const Movie movies[], int size)
 {
     ofstream file("movies.csv");
     if (!file.is_open())
     {
-        cout << "no se pudo abrir movies.csv para escribir" << endl;
+        cout << "\nNo se encuentra el archivo. Creando una nueva carpeta" << endl;
         return;
     }
 
@@ -312,7 +313,7 @@ void saveMovies(const Movie movies[], int size)
     file.close();
 }
 
-
+// Funci贸n para guardar informaci贸n del cliente en un archivo binario
 void saveCustomer(const Customer &customer)
 {
     ofstream customersFile("customers.dat", ios::binary | ios::app);
@@ -320,20 +321,21 @@ void saveCustomer(const Customer &customer)
     {
         customersFile.write(reinterpret_cast<const char *>(&customer), sizeof(Customer));
         customersFile.close();
-        cout << "La informacion del cliente se guardo correctamente." << endl;
+        cout << "\nCustomer information saved successfully." << endl;
     }
     else
     {
-        cout << "No se pueden abrir costumer. data para escribir" << endl;
+        cout << "\nError: Unable to open customers.dat for writing" << endl;
     }
 }
 
+// Funci贸n para buscar informaci贸n de un cliente en un archivo binario
 void searchCustomer(const string &customerName)
 {
     ifstream customersFile("customers.dat", ios::binary);
     if (!customersFile.is_open())
     {
-        cout << "No se pudo abrir customers.dat. creando un nuevo archivo." << endl;
+        cout << "\nWarning: Unable to open customers.dat. Creating a new file." << endl;
         ofstream newFile("customers.dat", ios::binary);
         newFile.close();
         return;
@@ -344,8 +346,8 @@ void searchCustomer(const string &customerName)
     while (customersFile.read(reinterpret_cast<char *>(&customer), sizeof(Customer)))
     {
 
-        cout << "Nombre: " << customer.name << endl;
-        cout << "Pelicula rentada: " << customer.rentedMovie << endl;
+        cout << "\nName: " << customer.name << endl;
+        cout << "\nRented Movie: " << customer.rentedMovie << endl;
 
         string lowercaseCustomerName = customer.name;
         transform(lowercaseCustomerName.begin(), lowercaseCustomerName.end(), lowercaseCustomerName.begin(), ::tolower);
@@ -355,48 +357,82 @@ void searchCustomer(const string &customerName)
 
         if (lowercaseCustomerName == lowercaseInputName)
         {
-            cout << "Cliente encontrado:\n"
+            cout << "\nCustomer found:\n"
                  << endl;
-            cout << "Nombre: " << customer.name << endl;
-            cout << "Pelicula rentada: " << customer.rentedMovie << endl;
+            cout << "Name: " << customer.name << endl;
+            cout << "Rented Movie: " << customer.rentedMovie << endl;
             found = true;
             break;
         }
     }
     if (!found)
     {
-        cout << "Cliente no encontrado." << endl;
+        cout << "\nCustomer not found." << endl;
     }
 
     customersFile.close();
 }
+//Cargar cliente
+void loadClientes(Cliente clientes[], int &size)
+{
+    ifstream file("clientes.txt");
+    if (!file.is_open())
+    {
+        cout << "\nCreando un nuevo archivo" << endl;
+        ofstream newFile("clientes.txt");
+        newFile.close();
+        return;
+    }
+}
 
+void saveClientes(Cliente clientes[], int size)
+{
+    ofstream clientefile("clientes.txt");
+    if (!clientefile.is_open())
+    {
+        cout << "\nNo se encuentra el archivo. Creando una nueva carpeta" << endl;
+        return;
+    }
 
+    for (int i = 0; i < size; ++i)
+    {
+        clientefile << clientes[i].id << "," << clientes[i].nombre << "," << clientes[i].cedula << ","
+              << clientes[i].telefono<< endl;
+        cout<<"Cargado satisfactoriamente";
+    }
+
+    clientefile.close();
+}
+// Funci贸n principal
 int main()
 {
-   
+    // Arreglo de tipo pelicula y tama駉
     Movie movies[MAX_MOVIES];
     int movieSize = 0;
-
+    // Arreglo de tipo Clientes y tama駉
+    Cliente clientes[MAX_MOVIES];
+    int clienteSize = 0;
+    //Cargar datos desde el archivo movies.csv
     loadMovies(movies, movieSize);
-
+    loadClientes(clientes, clienteSize);
+    // Bucle principal del programa
     while (true)
     {
-      
-        cout << "\nBlockbuster Command Line System\n"
+        // Menu Principal
+        cout << "\nTu Pelicula System\n"
              << endl;
-        cout << "1. Mostrar peliculas" << endl;
-        cout << "2. Consultar estado de alquiler" << endl;
-        cout << "3. Rentar pelicula" << endl;
-        cout << "4. Anadir nueva pelicula" << endl;
-        cout << "5. Buscar cliente" << endl;
-        cout << "6. Salir" << endl;
-
+        cout << "1. Mostrar Pelicula" << endl;
+        cout << "2. Consultar Estado de Alquiles" << endl;
+        cout << "3. Rentar Pelicula" << endl;
+        cout << "4. Agregar Pelicula Nueva" << endl;
+        cout << "5. Buscar Cliente" << endl;
+        cout << "6. Agregar Cliente" << endl;
+        cout << "7. Salir" << endl;
         int choice;
-        cout << "Ingrese su eleccion: ";
+        cout << "\nEnter para salir: ";
         cin >> choice;
 
-       
+        // opciones del meni
         switch (choice)
         {
         case 1:
@@ -404,9 +440,9 @@ int main()
             break;
         case 2:
         {
-            cout << "Consultar estado de alquiler:\n"
+            cout << "\nConsultar Peliculas:\n"
                  << endl;
-            cout << "Ingrese ID de pelicula: ";
+            cout << "Ingrese ID: ";
             int movieID;
             cin >> movieID;
 
@@ -417,11 +453,11 @@ int main()
             {
                 if (movies[i].id == movieID)
                 {
-                    cout << "Estado de renta: " << movies[i].status << endl;
-                    if (movies[i].status == "Rented")
+                    cout << "\nStatus de Renta: " << movies[i].status << endl;
+                    if (movies[i].status == "Rentado")
                     {
-                        cout << "Rentado a: " << movies[i].rentTo << endl;
-                        cout << "Rentado en: " << movies[i].rentDate << endl;
+                        cout << "\nRentado a: " << movies[i].rentTo << endl;
+                        cout << "\nFecha de Renta: " << movies[i].rentDate << endl;
                         foundRentedMovies = true;
                     }
                     movieFound = true;
@@ -431,18 +467,18 @@ int main()
 
             if (!movieFound)
             {
-                cout << "Pelicula no encontrada." << endl;
+                cout << "\nPelicula no encntrada." << endl;
             }
             else if (!foundRentedMovies)
             {
-                cout << "Pelicula no rentada." << endl;
+                cout << "\nPElicula no rentada." << endl;
             }
         }
         break;
         case 3:
             {
                 int movieID;
-                cout << "Ingrese ID de pelicula: ";
+                cout << "\nIngrese ID pelicula: ";
                 cin >> movieID;
 
                 int movieIndex = -1;
@@ -457,58 +493,61 @@ int main()
 
                 if (movieIndex != -1)
                 {
-                    if (movies[movieIndex].status == "Available" || movies[movieIndex].status == "")
+                    if (movies[movieIndex].status == "Disponible" || movies[movieIndex].status == "")
                     {
-                        cout << "Ingrese nombre del cliente: ";
+                        cout << "\nIngrese Nombre: ";
                         string customerName;
                         cin.ignore();
                         getline(cin, customerName);
-
+                        cout << "\nIngrese Fecha de Renta (dd-mm-yyyy): ";
+                        string fecha;
+                        cin.ignore();
+                        getline(cin, fecha);
                         movies[movieIndex].rentTo = customerName;
-                        movies[movieIndex].rentDate = getCurrentDate();
-                        movies[movieIndex].status = "Rented";
+                        movies[movieIndex].rentDate = fecha;
+                        movies[movieIndex].status = "Rentado";
 
                         Customer customer;
                         customer.name = customerName;
                         customer.rentedMovie = movies[movieIndex].title;
                         saveCustomer(customer);
 
-                        cout << "Pelicua rentada exitosamente." << endl;
+                        cout << "\nPelicula rentada exitosamente." << endl;
                     }
                     else
                     {
-                        cout << "Pelicula ya rentada." << endl;
+                        cout << "\nMovie fue rentada." << endl;
                     }
                 }
                 else
                 {
-                    cout << "Pelicula no encontrada." << endl;
+                    cout << "\nMovie no encontrada." << endl;
                 }
             }
             break;
         case 4:
             {
-                cout << "Introduce el nombre de la pelicula: ";
+                cout << "\nIngresa Titulo: ";
                 cin.ignore();
                 getline(cin, movies[movieSize].title);
 
-                cout << "Ingrese el genero de la pelicula: ";
+                cout << "\nIngresa Genero: ";
                 getline(cin, movies[movieSize].genres);
 
-                cout << "Ingrese la duracion de la pelicula (minutos): ";
+                cout << "\nIngresa Duracion (minutes): ";
                 cin >> movies[movieSize].duration;
 
-                cout << "Ingrese el director de la pelicula: ";
+                cout << "\nIngresa Director: ";
                 cin.ignore();
                 getline(cin, movies[movieSize].director);
 
-                cout << "Ingrese la fecha de estreno de la pelicula (dd/mm/yyyy): ";
+                cout << "\nIngresa Fecha de Lanzamiento (dd/mm/yyyy): ";
                 cin >> movies[movieSize].releaseDate;
 
                 movies[movieSize].id = movieSize + 1;
                 movies[movieSize].rentTo = "";
                 movies[movieSize].rentDate = "";
-                movies[movieSize].status = "Available";
+                movies[movieSize].status = "Disponible";
 
                 ++movieSize;
             }
@@ -516,18 +555,38 @@ int main()
         case 5:
             {
                 string customerName;
-                cout << "\nEnter customer name: ";
+                cout << "\nIngresa Nombre: ";
                 cin.ignore();
                 getline(cin, customerName);
                 searchCustomer(customerName);
             }
             break;
-        case 6:
+            case 6:
+            {
+                cout << "Ingresa nombre: ";
+                cin.ignore();
+                getline(cin, clientes[clienteSize].nombre);
+
+                cout << "Ingresa Cedula: ";
+                getline(cin, clientes[clienteSize].cedula);
+
+                cout << "Ingresa telefono: ";
+                cin >> clientes[clienteSize].telefono;
+                 saveClientes(clientes,clienteSize);
+                clientes[clienteSize].id = clienteSize + 1;
+                clientes[clienteSize].nombre = "";
+                clientes[clienteSize].cedula = "";
+                clientes[clienteSize].telefono = " ";
+
+                ++clienteSize;
+            }
+            break;
+        case 7:
             saveMovies(movies, movieSize);
-            cout << "Saliendo de Blockbuster System. Adios!" << endl;
+            cout << "\nSaliendo de TuPelicula System. Adios!" << endl;
             return 0;
         default:
-            cout << "Eleccion invalida. Por favor vuelva a intentarlo." << endl;
+            cout << "Invalid choice. Please try again." << endl;
         }
     }
 
